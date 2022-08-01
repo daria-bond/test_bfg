@@ -3,10 +3,14 @@ import createSagaMiddleware from "redux-saga";
 import saga from "./saga";
 import { persistStore, persistReducer } from "redux-persist";
 import sessionStorage from "redux-persist/lib/storage/session";
+import questionsReducer from "../redux/questions/slice";
 
 const sagaMiddleware = createSagaMiddleware();
 
-const rootReducer = () => combineReducers({});
+const rootReducer = () =>
+  combineReducers({
+    questionsData: questionsReducer,
+  });
 
 const persistConfig = {
   key: "root",
