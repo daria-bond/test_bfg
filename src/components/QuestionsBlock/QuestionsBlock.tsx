@@ -1,14 +1,22 @@
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import QuestionItem from "../QuestionItem/QuestionItem";
 import { useAppSelector } from "../../hooks/redux";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import "./QuestionsBlock.scss";
+import update from "immutability-helper";
 
 const QuestionsBlock: FC = () => {
   const [clicked, setClicked] = useState<number | null>(null);
-  const { allQuestions } = useAppSelector((state) => state.questionsData);
+  const { allQuestions, isLoadingQuestions } = useAppSelector(
+    (state) => state.questionsData
+  );
 
+  const [questionsList, setQuestionsList] = useState<IQuestion[]>(allQuestions);
   const openItemRef = useRef<any>(null); // TODO: типизация
+
+  useEffect(() => {
+    setQuestionsList(allQuestions);
+  }, [allQuestions]);
 
   const onClose = () => {
     setClicked(null);
@@ -16,30 +24,55 @@ const QuestionsBlock: FC = () => {
 
   useOutsideClick(openItemRef, onClose, clicked);
 
-  const handleToggle = (index: number) => {
-    if (clicked === index) {
+  const handleToggle = (id: number) => {
+    if (clicked === id) {
       return setClicked(null);
     }
-    setClicked(index);
+    setClicked(id);
   };
 
-  return (
-    <ul ref={openItemRef}>
-      {allQuestions.map((question, index) => (
+  const moveQuestionItem = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      setQuestionsList((prevQuestionsList: IQuestion[]) =>
+        update(prevQuestionsList, {
+          $splice: [
+            [dragIndex, 1],
+            [hoverIndex, 0, prevQuestionsList[dragIndex] as IQuestion],
+          ],
+        })
+      );
+    },
+    []
+  );
+
+  const renderQuestionItem = useCallback(
+    (question: IQuestion, index: number) => {
+      return (
         <QuestionItem
-          key={index}
-          onToggle={() => handleToggle(index)}
-          title={question.title}
-          score={question.score}
-          ownerName={question.owner.display_name}
-          active={clicked === index}
-          isAnswered={question.is_answered}
+          key={question.questionId}
+          onToggle={() => handleToggle(question.questionId)}
+          active={clicked === question.questionId}
           index={index}
-          ownerReputation={question.owner.reputation}
-          answerCount={question.answer_count}
+          moveQuestionItem={moveQuestionItem}
+          questionInfo={question}
         />
-      ))}
-    </ul>
+      );
+    },
+    [clicked]
+  );
+
+  return (
+    <>
+      {isLoadingQuestions ? (
+        <div>123</div> // TODO: добавить скелет или спинер
+      ) : (
+        <ul ref={openItemRef}>
+          {questionsList.map((question, index) =>
+            renderQuestionItem(question, index)
+          )}
+        </ul>
+      )}
+    </>
   );
 };
 

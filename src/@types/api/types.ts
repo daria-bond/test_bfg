@@ -1,5 +1,5 @@
 declare global {
-  interface IQuestion {
+  interface IResQuestion {
     tags: string[];
     owner: {
       account_id: number;

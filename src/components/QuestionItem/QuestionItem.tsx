@@ -1,37 +1,106 @@
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 import "./QuestionItem.scss";
 import ScoreBlock from "../ScoreBlock/ScoreBlock";
+import { useDrag, useDrop } from "react-dnd";
+import { Identifier, XYCoord } from "dnd-core";
+import { ItemTypes } from "../../@types/ItemTypes";
 
 interface IQuestionItem {
-  title: string;
-  score: number;
-  ownerName: string;
-  ownerReputation: number;
   active: boolean;
   onToggle: () => void;
-  isAnswered: boolean;
   index: number;
-  answerCount: number;
+  moveQuestionItem: (dragIndex: number, hoverIndex: number) => void;
+  questionInfo: IQuestion;
 }
 
 const QuestionItem: FC<IQuestionItem> = ({
-  title,
-  score,
-  ownerName,
-  ownerReputation,
   active,
   onToggle,
-  isAnswered,
   index,
-  answerCount,
+  moveQuestionItem,
+  questionInfo,
 }) => {
+  const {
+    title,
+    score,
+    ownerName,
+    isAnswered,
+    ownerReputation,
+    questionId,
+    answerCount,
+  } = questionInfo;
+
+  const ref = useRef<HTMLLIElement>(null);
+
+  const [{ handlerId }, drop] = useDrop<
+    IQuestionItem,
+    void,
+    { handlerId: Identifier | null }
+  >({
+    accept: ItemTypes.QUESTION,
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover(item: IQuestionItem, monitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      const clientOffset = monitor.getClientOffset();
+
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+
+      moveQuestionItem(dragIndex, hoverIndex);
+
+      item.index = hoverIndex;
+    },
+  });
+
+  const [{ isDragging }, drag] = useDrag({
+    type: ItemTypes.QUESTION,
+    item: () => {
+      return { questionId, index };
+    },
+    collect: (monitor: any) => ({
+      // TODO: any
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const opacity = isDragging ? 0 : 1;
+  drag(drop(ref));
+
   return (
-    <li className="question-item-container">
+    <li
+      className="question-item-container"
+      ref={ref}
+      style={{ opacity }}
+      data-handler-id={handlerId}
+    >
       <button
-        className={`${
-          isAnswered
-            ? "question-item-container__button is-answered"
-            : "question-item-container__button is-not-answered"
+        className={`question-item-container__button ${
+          isAnswered ? "is-answered" : "is-not-answered"
         }`}
         onClick={onToggle}
       >
