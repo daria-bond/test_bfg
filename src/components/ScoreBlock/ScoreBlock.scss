@@ -1,0 +1,13 @@
+.score-block-container {
+  display: flex;
+  align-items: center;
+
+  &__score-number {
+    margin-right: 1rem;
+  }
+
+  &__buttons-container {
+    display: flex;
+    flex-direction: column;
+  }
+}
