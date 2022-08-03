@@ -4,10 +4,15 @@
 
   &__score-number {
     margin-right: 1rem;
+    font-size: 1.5rem;
   }
 
   &__buttons-container {
     display: flex;
     flex-direction: column;
+
+    .MuiIconButton-root {
+      color: white;
+    }
   }
 }

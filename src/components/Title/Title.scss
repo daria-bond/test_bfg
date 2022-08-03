@@ -1,5 +1,101 @@
 .title-container {
-  span {
-  font-size: 50px;
+  &__title {
+    font-family: 'Jost', sans-serif;
+    font-size: 3.3rem;
+    color: white;
  }
+
+  &__buttons-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+
+    .MuiButton-root {
+      background: none;
+      font-family: 'Jost', sans-serif;
+      font-size: 1rem;
+      width: 9rem;
+      height: 56px;
+      color: #0CCf4f;
+      border: 2px solid #0CCf4f;
+    }
+
+    .MuiButton-root:hover {
+      color: #22fbc3;
+      border: 2px solid #22fbc3;
+    }
+
+    .MuiTextField-root {
+
+      .MuiOutlinedInput-root {
+        color: white;
+        font-family: 'Jost', sans-serif;
+
+        .MuiIconButton-root {
+          color: white;
+        }
+      }
+
+      .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+        border: 2px solid white;
+      }
+
+      .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+        border: 2px solid #22fbc3;
+      }
+
+      .MuiOutlinedInput-notchedOutline {
+        border: 2px solid white;
+      }
+
+
+    }
+  }
+}
+
+.date-input__popper {
+  .MuiPaper-root {
+    border-radius: 10px;
+    background: #050607;
+    color: white;
+    font-family: 'Jost', sans-serif;
+    -webkit-box-shadow: 1px 0 5px 4px rgba(85, 186, 114, 0.5);
+    -moz-box-shadow: 1px 0 5px 4px rgba(85, 186, 114, 0.5);
+    box-shadow: 1px 0 5px 4px rgba(85, 186, 114, 0.5);
+
+    .PrivatePickersFadeTransitionGroup-root {
+      font-family: 'Jost', sans-serif;
+    }
+
+    .MuiIconButton-root {
+      color: white;
+    }
+
+    .PrivatePickersFadeTransitionGroup-root {
+      .MuiTypography-root {
+        font-family: 'Jost', sans-serif;
+        color: white;
+      }
+
+      .PrivatePickersSlideTransition-root {
+        .MuiButtonBase-root.MuiPickersDay-root.Mui-selected {
+          background: rgb(12,207,79);
+          background: linear-gradient(165deg, rgba(12,207,79,1) 0%, rgba(34,191,195,1) 100%);
+        }
+
+        .MuiButtonBase-root.MuiPickersDay-root {
+          background: #050607;
+          color: white;
+          font-family: 'Jost', sans-serif;
+        }
+      }
+
+      .PrivatePickersYear-yearButton.Mui-selected {
+        background: rgb(12,207,79);
+        background: linear-gradient(165deg, rgba(12,207,79,1) 0%, rgba(34,191,195,1) 100%);
+      }
+    }
+  }
 }

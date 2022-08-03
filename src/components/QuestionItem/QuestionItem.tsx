@@ -4,13 +4,16 @@ import ScoreBlock from "../ScoreBlock/ScoreBlock";
 import { useDrag, useDrop } from "react-dnd";
 import { Identifier, XYCoord } from "dnd-core";
 import { ItemTypes } from "../../@types/ItemTypes";
+import { useDoubleClick } from "../../hooks/useDoubleClick";
 
 interface IQuestionItem {
   active: boolean;
   onToggle: () => void;
+  onSwap: () => void;
   index: number;
   moveQuestionItem: (dragIndex: number, hoverIndex: number) => void;
   questionInfo: IQuestion;
+  selected: boolean;
 }
 
 const QuestionItem: FC<IQuestionItem> = ({
@@ -19,6 +22,8 @@ const QuestionItem: FC<IQuestionItem> = ({
   index,
   moveQuestionItem,
   questionInfo,
+  onSwap,
+  selected,
 }) => {
   const {
     title,
@@ -31,6 +36,11 @@ const QuestionItem: FC<IQuestionItem> = ({
   } = questionInfo;
 
   const ref = useRef<HTMLLIElement>(null);
+
+  const hybridClick = useDoubleClick(
+    () => onSwap(),
+    () => onToggle()
+  );
 
   const [{ handlerId }, drop] = useDrop<
     IQuestionItem,
@@ -82,8 +92,7 @@ const QuestionItem: FC<IQuestionItem> = ({
     item: () => {
       return { questionId, index };
     },
-    collect: (monitor: any) => ({
-      // TODO: any
+    collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   });
@@ -93,28 +102,30 @@ const QuestionItem: FC<IQuestionItem> = ({
 
   return (
     <li
-      className="question-item-container"
+      className={`question-item-container ${selected ? "selected" : ""}`}
       ref={ref}
       style={{ opacity }}
       data-handler-id={handlerId}
     >
-      <button
+      <div
         className={`question-item-container__button ${
           isAnswered ? "is-answered" : "is-not-answered"
-        }`}
-        onClick={onToggle}
+        } ${selected ? "selected" : ""}`}
+        onClick={hybridClick}
       >
-        <p className="question-item-container__button__title">{title}</p>
+        <span className="question-item-container__button__title">{title}</span>
         <ScoreBlock score={score} index={index} />
-      </button>
+      </div>
 
-      {active && (
-        <div className="question-item-container__additional-content">
-          <p>Создатель вопроса: {ownerName}</p>
-          <p>Рейтинг создателя вопроса: {ownerReputation}</p>
-          <p>Количество ответов: {answerCount}</p>
-        </div>
-      )}
+      <div
+        className={`question-item-container__additional-content ${
+          active ? "active" : ""
+        }`}
+      >
+        <p>Создатель вопроса: {ownerName}</p>
+        <p>Рейтинг создателя вопроса: {ownerReputation}</p>
+        <p>Количество ответов: {answerCount}</p>
+      </div>
     </li>
   );
 };

@@ -8,18 +8,6 @@ import {
 import { getAllQuestionsAction } from "./action";
 import { getAllQuestions } from "../../services/questions";
 
-interface IResponseGetQuestions {
-  items: IResQuestion[];
-  has_more: boolean;
-  quota_max: number;
-  quota_remaining: number;
-}
-
-interface IResponse {
-  data: IResponseGetQuestions;
-  status: number;
-}
-
 const responseToQuestion = (resQuestion: IResQuestion): IQuestion => ({
   title: resQuestion.title,
   score: resQuestion.score,

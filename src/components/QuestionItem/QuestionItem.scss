@@ -13,23 +13,46 @@
     color:white;
     padding: 1rem;
     margin-top: 1rem;
+    font-family: 'Jost', sans-serif;
 
     &__title {
-      font-size: 20px;
+      font-size: 1.5rem;
       width: 75%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: left;
     }
   }
 
+  .selected {
+    -webkit-box-shadow: 0 4px 85px 2px rgba(180, 255, 192, 0.58);
+    -moz-box-shadow: 0 4px 85px 2px rgba(180, 255, 192, 0.58);
+    box-shadow: 0 4px 85px 2px rgba(180, 255, 192, 0.58);
+    border: 5px solid white;
+  }
+
   .is-answered {
-    background: green;
+    background: rgb(12,207,79);
+    background: linear-gradient(165deg, rgba(12,207,79,1) 0%, rgba(34,191,195,1) 100%);
   }
 
   .is-not-answered {
-    background: pink;
+    background: rgb(151,249,255);
+    background: linear-gradient(165deg, rgba(151,249,255,1) 0%, rgba(3,33,182,1) 100%);
   }
 
   &__additional-content {
-    padding: 0.5rem;
-    border: 1px solid black;
+    padding: 1rem 1rem 0;
+    color: white;
+    font-family: 'Jost', sans-serif;
+    display: none;
+    font-size: 1.2rem;
+    line-height: 1.5;
+  }
+
+  .active {
+    display: block;
   }
 }
+

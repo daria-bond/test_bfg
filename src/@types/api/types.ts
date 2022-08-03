@@ -25,6 +25,18 @@ declare global {
     closed_reason: string;
     title: string;
   }
+
+  interface IResponseGetQuestions {
+    items: IResQuestion[];
+    has_more: boolean;
+    quota_max: number;
+    quota_remaining: number;
+  }
+
+  interface IResponse {
+    data: IResponseGetQuestions;
+    status: number;
+  }
 }
 
 export {};

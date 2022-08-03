@@ -9,38 +9,50 @@ import { isEqual } from "date-fns";
 import "./Title.scss";
 
 const Title: FC = () => {
-  const { questionsFromDate } = useAppSelector((state) => state.questionsData);
+  const { questionsFromDate, isLoadingQuestions } = useAppSelector(
+    (state) => state.questionsData
+  );
   const dispatch = useAppDispatch();
-  const [value, setValue] = React.useState<Date | null>(questionsFromDate);
+  const [fromDate, setFromDate] = React.useState<Date | null>(
+    new Date(2018, 0, 1)
+  );
 
-  const handleChange = (newValue: Date | null) => {
-    setValue(newValue);
+  const handleChange = (newDate: Date | null) => {
+    setFromDate(newDate);
   };
 
   return (
     <div className="title-container">
-      <span>
+      <p className="title-container__title">
         5 самых популярных вопросов на StackOverflow, содержащих
         &quot;react-redux&quot; в наименовании, начиная с
-      </span>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DesktopDatePicker
-          inputFormat="MM/dd/yyyy"
-          value={value}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
-      </LocalizationProvider>
-      {value && !isEqual(value, questionsFromDate) && (
-        <Button
-          variant="outlined"
-          onClick={() => {
-            dispatch(getAllQuestionsAction(value));
-          }}
-        >
-          Поиск
-        </Button>
-      )}
+      </p>
+      <div className="title-container__buttons-container">
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DesktopDatePicker
+            PopperProps={{
+              className: "date-input__popper",
+              placement: "bottom-start",
+            }}
+            inputFormat="MM/dd/yyyy"
+            value={fromDate}
+            onChange={handleChange}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </LocalizationProvider>
+        {!isLoadingQuestions &&
+          fromDate &&
+          !isEqual(fromDate, questionsFromDate) && (
+            <Button
+              variant="outlined"
+              onClick={() => {
+                dispatch(getAllQuestionsAction(fromDate));
+              }}
+            >
+              Поиск
+            </Button>
+          )}
+      </div>
     </div>
   );
 };

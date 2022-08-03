@@ -1,18 +1,29 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import QuestionItem from "../QuestionItem/QuestionItem";
 import { useAppSelector } from "../../hooks/redux";
 import useOutsideClick from "../../hooks/useOutsideClick";
-import "./QuestionsBlock.scss";
 import update from "immutability-helper";
+import { arraySwap } from "../../utils/helpers/arraySwap";
+import { CircularProgress } from "@mui/material";
+import "./QuestionsBlock.scss";
 
 const QuestionsBlock: FC = () => {
-  const [clicked, setClicked] = useState<number | null>(null);
   const { allQuestions, isLoadingQuestions } = useAppSelector(
     (state) => state.questionsData
   );
 
+  const [clicked, setClicked] = useState<number | null>(null);
+  const [doubleClicked, setDoubleClicked] = useState<number | null>(null);
   const [questionsList, setQuestionsList] = useState<IQuestion[]>(allQuestions);
-  const openItemRef = useRef<any>(null); // TODO: типизация
+
+  const openItemRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setQuestionsList(allQuestions);
@@ -22,13 +33,34 @@ const QuestionsBlock: FC = () => {
     setClicked(null);
   };
 
+  const onUnselected = () => {
+    setDoubleClicked(null);
+  };
+
   useOutsideClick(openItemRef, onClose, clicked);
+  useOutsideClick(openItemRef, onUnselected, doubleClicked);
 
   const handleToggle = (id: number) => {
     if (clicked === id) {
       return setClicked(null);
     }
     setClicked(id);
+  };
+
+  const handleSwap = (index: number) => {
+    if (doubleClicked === index) {
+      setDoubleClicked(null);
+      return;
+    }
+
+    if (doubleClicked === null) {
+      setDoubleClicked(index);
+      return;
+    }
+
+    setQuestionsList(arraySwap(questionsList, doubleClicked, index));
+    setDoubleClicked(null);
+    return;
   };
 
   const moveQuestionItem = useCallback(
@@ -55,22 +87,28 @@ const QuestionsBlock: FC = () => {
           index={index}
           moveQuestionItem={moveQuestionItem}
           questionInfo={question}
+          onSwap={() => handleSwap(index)}
+          selected={index === doubleClicked}
         />
       );
     },
-    [clicked]
+    [clicked, doubleClicked]
   );
 
   return (
     <>
       {isLoadingQuestions ? (
-        <div>123</div> // TODO: добавить скелет или спинер
+        <div className="spinner-container">
+          <CircularProgress />
+        </div>
       ) : (
-        <ul ref={openItemRef}>
-          {questionsList.map((question, index) =>
-            renderQuestionItem(question, index)
-          )}
-        </ul>
+        <>
+          <ul ref={openItemRef as MutableRefObject<HTMLUListElement>}>
+            {questionsList.map((question, index) =>
+              renderQuestionItem(question, index)
+            )}
+          </ul>
+        </>
       )}
     </>
   );
