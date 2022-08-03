@@ -9,9 +9,8 @@ import { isEqual } from "date-fns";
 import "./Title.scss";
 
 const Title: FC = () => {
-  const { questionsFromDate, isLoadingQuestions } = useAppSelector(
-    (state) => state.questionsData
-  );
+  const { questionsFromDate, isLoadingQuestions, currentQuota } =
+    useAppSelector((state) => state.questionsData);
   const dispatch = useAppDispatch();
   const [fromDate, setFromDate] = React.useState<Date | null>(
     new Date(2018, 0, 1)
@@ -44,6 +43,7 @@ const Title: FC = () => {
           fromDate &&
           !isEqual(fromDate, questionsFromDate) && (
             <Button
+              title={`Доступная квота запросов: ${currentQuota}`}
               variant="outlined"
               onClick={() => {
                 dispatch(getAllQuestionsAction(fromDate));

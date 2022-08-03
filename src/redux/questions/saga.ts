@@ -2,6 +2,7 @@ import { put, takeEvery } from "redux-saga/effects";
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
   setAllQuestions,
+  setCurrentQuota,
   setIsLoadingQuestions,
   setQuestionsFromDate,
 } from "./slice";
@@ -23,6 +24,7 @@ function* workerGetAllQuestions({ payload }: PayloadAction<Date>) {
     yield put(setIsLoadingQuestions(true));
     const response: IResponse = yield getAllQuestions(payload);
     yield put(setAllQuestions(response.data.items.map(responseToQuestion)));
+    yield put(setCurrentQuota(response.data.quota_remaining));
     yield put(setQuestionsFromDate(payload));
     yield put(setIsLoadingQuestions(false));
   } catch (e) {
