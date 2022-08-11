@@ -1,16 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { responseToQuestion } from "../../utils/helpers/responseToQuestion";
 
 export interface IQuestionsState {
   isLoadingQuestions: boolean;
   allQuestions: IQuestion[];
-  questionsFromDate: Date;
   currentQuota: number;
 }
 
 const initialState: IQuestionsState = {
   isLoadingQuestions: false,
   allQuestions: [],
-  questionsFromDate: new Date(2018, 0, 1),
   currentQuota: 0,
 };
 
@@ -24,9 +23,6 @@ export const questionsSlice = createSlice({
     setIsLoadingQuestions: (state, { payload }: PayloadAction<boolean>) => {
       state.isLoadingQuestions = payload;
     },
-    setQuestionsFromDate: (state, { payload }: PayloadAction<Date>) => {
-      state.questionsFromDate = payload;
-    },
     setCurrentQuota: (state, { payload }: PayloadAction<number>) => {
       state.currentQuota = payload;
     },
@@ -36,16 +32,23 @@ export const questionsSlice = createSlice({
     decreaseQuestionScore: (state, { payload }: PayloadAction<number>) => {
       state.allQuestions[payload].score = state.allQuestions[payload].score - 1;
     },
+    setCurrentQuotaAnsQuestions: (
+      state,
+      { payload }: PayloadAction<IResponseGetQuestions>
+    ) => {
+      state.currentQuota = payload.quota_remaining;
+      state.allQuestions = payload.items.map(responseToQuestion);
+    },
   },
 });
 
 export const {
   setAllQuestions,
   setIsLoadingQuestions,
-  setQuestionsFromDate,
   increaseQuestionScore,
   decreaseQuestionScore,
   setCurrentQuota,
+  setCurrentQuotaAnsQuestions,
 } = questionsSlice.actions;
 
 export default questionsSlice.reducer;

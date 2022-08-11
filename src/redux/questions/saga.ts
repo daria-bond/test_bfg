@@ -1,31 +1,14 @@
 import { put, takeEvery } from "redux-saga/effects";
 import { PayloadAction } from "@reduxjs/toolkit";
-import {
-  setAllQuestions,
-  setCurrentQuota,
-  setIsLoadingQuestions,
-  setQuestionsFromDate,
-} from "./slice";
+import { setCurrentQuotaAnsQuestions, setIsLoadingQuestions } from "./slice";
 import { getAllQuestionsAction } from "./action";
 import { getAllQuestions } from "../../services/questions";
-
-const responseToQuestion = (resQuestion: IResQuestion): IQuestion => ({
-  title: resQuestion.title,
-  score: resQuestion.score,
-  ownerName: resQuestion.owner.display_name,
-  isAnswered: resQuestion.is_answered,
-  ownerReputation: resQuestion.owner.reputation,
-  answerCount: resQuestion.answer_count,
-  questionId: resQuestion.question_id,
-});
 
 function* workerGetAllQuestions({ payload }: PayloadAction<Date>) {
   try {
     yield put(setIsLoadingQuestions(true));
     const response: IResponse = yield getAllQuestions(payload);
-    yield put(setAllQuestions(response.data.items.map(responseToQuestion)));
-    yield put(setCurrentQuota(response.data.quota_remaining));
-    yield put(setQuestionsFromDate(payload));
+    yield put(setCurrentQuotaAnsQuestions(response.data));
     yield put(setIsLoadingQuestions(false));
   } catch (e) {
     console.log("error", e);

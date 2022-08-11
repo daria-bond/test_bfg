@@ -9,15 +9,22 @@ import { isEqual } from "date-fns";
 import "./Title.scss";
 
 const Title: FC = () => {
-  const { questionsFromDate, isLoadingQuestions, currentQuota } =
-    useAppSelector((state) => state.questionsData);
+  const { isLoadingQuestions, currentQuota } = useAppSelector(
+    (state) => state.questionsData
+  );
   const dispatch = useAppDispatch();
-  const [fromDate, setFromDate] = React.useState<Date | null>(
+  const [fromDate, setFromDate] = React.useState<Date>(new Date(2018, 0, 1));
+  const [fromDateCurrent, setFromDateCurrent] = React.useState<Date | null>(
     new Date(2018, 0, 1)
   );
 
   const handleChange = (newDate: Date | null) => {
-    setFromDate(newDate);
+    setFromDateCurrent(newDate);
+  };
+
+  const onSearchClick = (date: Date) => {
+    dispatch(getAllQuestionsAction(date));
+    setFromDate(date);
   };
 
   return (
@@ -34,20 +41,18 @@ const Title: FC = () => {
               placement: "bottom-start",
             }}
             inputFormat="MM/dd/yyyy"
-            value={fromDate}
+            value={fromDateCurrent}
             onChange={handleChange}
             renderInput={(params) => <TextField {...params} />}
           />
         </LocalizationProvider>
         {!isLoadingQuestions &&
-          fromDate &&
-          !isEqual(fromDate, questionsFromDate) && (
+          fromDateCurrent &&
+          !isEqual(fromDateCurrent, fromDate) && (
             <Button
               title={`Доступная квота запросов: ${currentQuota}`}
               variant="outlined"
-              onClick={() => {
-                dispatch(getAllQuestionsAction(fromDate));
-              }}
+              onClick={() => onSearchClick(fromDateCurrent)}
             >
               Поиск
             </Button>
