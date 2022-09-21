@@ -48,6 +48,7 @@ const Title: FC = () => {
         </LocalizationProvider>
         {!isLoadingQuestions &&
           fromDateCurrent &&
+          !isNaN(fromDateCurrent.getTime()) &&
           !isEqual(fromDateCurrent, fromDate) && (
             <Button
               title={`Доступная квота запросов: ${currentQuota}`}
